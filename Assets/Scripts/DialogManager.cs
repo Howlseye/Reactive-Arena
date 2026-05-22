@@ -66,11 +66,12 @@ IEnumerator KetikKalimat()
         // Putar suara jika bukan spasi
         if (huruf != ' ' && sfxKetik != null)
         {
-            // --- MODIFIKASI DI SINI ---
-            // Suara hanya akan berputar setiap 2 huruf sekali (angka 2 bisa kamu ganti ke 3 jika masih kemresek)
-            if (penghitungHuruf % 2 == 0)
+            // Mainkan suara hanya jika sedang tidak ada suara yang dimainkan
+            if (!audioSource.isPlaying)
             {
-                audioSource.PlayOneShot(sfxKetik, 0.5f); 
+                audioSource.clip = sfxKetik;
+                audioSource.pitch = Random.Range(0.9f, 1.1f); // Tambahan variasi pitch agar lebih natural
+                audioSource.Play(); 
             }
         }
 
