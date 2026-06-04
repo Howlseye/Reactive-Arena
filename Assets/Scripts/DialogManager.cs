@@ -1,116 +1,124 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using TMPro; // Wajib untuk TextMeshPro Teks
-using UnityEngine.UI; // Wajib untuk UI Button
+using TMPro;
+using UnityEngine.UI;
 
 public class DialogManager : MonoBehaviour
 {
     [Header("UI Elements")]
-    public TextMeshProUGUI komponenTeks;  // Tarik objek TextCerita ke sini
-    public GameObject panelDialog;       // Tarik objek PanelDialog ke sini
-    public Button tombolLanjut;          // Tarik objek TombolLanjut (Next) ke sini
+    public TextMeshProUGUI komponenTeks;  
+    public GameObject backgroundCerita;   // Objek Background abu-abu
+    public Button tombolLanjut;           // Tombol Next kamu
     
     [Header("Isi Cerita")]
     [TextArea(3, 5)]
-    public string[] daftarCerita;        // Tempat isi 4 paragraf cerita di Inspector
+    public string[] daftarCerita;
     
     [Header("Pengaturan Kecepatan")]
-    public float kecepatanKetik = 0.05f; // Jeda waktu antar huruf (detik)
+    public float kecepatanKetik = 0.05f;
 
     [Header("Audio Settings")]
-    public AudioClip sfxKetik;           // Tarik file audio klik/ketik pendek kamu ke sini
+    public AudioClip sfxKetik;
     private AudioSource audioSource;
+
+    [Header("Pengaturan BGM")]
+    public GameObject bgmTransition;      
+    public GameObject bgmMain;            
     
     private int indeksCerita = 0;
     private bool sedangKetik = false;
+    private Coroutine efekKetik; 
 
     void Start()
     {
-        // Otomatis mengambil komponen AudioSource di objek ini, atau buat baru jika belum ada
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
-
-        // Pastikan settingan audio aman dari code agar tidak nge-loop berantakan
         audioSource.loop = false;
         audioSource.playOnAwake = false;
 
-        // Munculkan panel cerita di awal scene
-        panelDialog.SetActive(true);
-        tombolLanjut.gameObject.SetActive(false); 
+        // Pastikan Background menyala di awal cerita
+        if (backgroundCerita != null) backgroundCerita.SetActive(true);
         
+        // Sembunyikan tombol Next di awal biar ga muncul sebelum teks diketik
+        if (tombolLanjut != null) tombolLanjut.gameObject.SetActive(false); 
+
         MulaiCerita();
     }
 
     void MulaiCerita()
     {
         indeksCerita = 0;
-        StartCoroutine(KetikKalimat());
+        if (efekKetik != null) StopCoroutine(efekKetik);
+        efekKetik = StartCoroutine(KetikKalimat());
     }
 
-IEnumerator KetikKalimat()
-{
-    sedangKetik = true;
-    komponenTeks.text = "";
-    tombolLanjut.gameObject.SetActive(false);
-
-    int penghitungHuruf = 0; // Variabel baru untuk menghitung huruf
-
-    foreach (char huruf in daftarCerita[indeksCerita].ToCharArray())
+    IEnumerator KetikKalimat()
     {
-        komponenTeks.text += huruf;
+        sedangKetik = true;
+        komponenTeks.text = "";
 
-        // Putar suara jika bukan spasi
-        if (huruf != ' ' && sfxKetik != null)
+        // ✨ BARU: Sembunyikan tombol Next pas teks mulai berjalan
+        if (tombolLanjut != null) tombolLanjut.gameObject.SetActive(false);
+
+        foreach (char huruf in daftarCerita[indeksCerita].ToCharArray())
         {
-            // Mainkan suara hanya jika sedang tidak ada suara yang dimainkan
-            if (!audioSource.isPlaying)
+            komponenTeks.text += huruf;
+
+            if (huruf != ' ' && sfxKetik != null)
             {
-                audioSource.clip = sfxKetik;
-                audioSource.pitch = Random.Range(0.9f, 1.1f); // Tambahan variasi pitch agar lebih natural
-                audioSource.Play(); 
+                if (!audioSource.isPlaying)
+                {
+                    audioSource.clip = sfxKetik;
+                    audioSource.pitch = Random.Range(0.9f, 1.1f);
+                    audioSource.Play(); 
+                }
             }
+            yield return new WaitForSeconds(kecepatanKetik);
         }
 
-        penghitungHuruf++; // Tambah hitungan huruf
-        yield return new WaitForSeconds(kecepatanKetik);
+        if (audioSource != null) audioSource.Stop();
+        sedangKetik = false;
+
+        // ✨ BARU: Munculkan kembali tombol Next setelah seluruh teks selesai diketik
+        if (tombolLanjut != null) tombolLanjut.gameObject.SetActive(true);
     }
 
-    if (audioSource != null)
-    {
-        audioSource.Stop(); 
-    }
-
-    sedangKetik = false;
-    tombolLanjut.gameObject.SetActive(true);
-}
-
-    // Fungsi ini dihubungkan ke Button OnClick() tombol "Next" di Unity Inspector
     public void KalimatBerikutnya()
     {
-        // Jika teks masih berjalan, tombol tidak bisa diklik untuk mencegah error
+        // Pengaman ekstra jika tombol ditekan secara paksa saat mengetik
         if (sedangKetik) return;
 
-        // Jika masih ada cerita di halaman berikutnya
         if (indeksCerita < daftarCerita.Length - 1)
         {
-            indeksCerita++;
-            StartCoroutine(KetikKalimat());
+            if (!string.IsNullOrEmpty(daftarCerita[indeksCerita + 1])) 
+            {
+                indeksCerita++;
+                if (efekKetik != null) StopCoroutine(efekKetik);
+                efekKetik = StartCoroutine(KetikKalimat());
+            }
+            else 
+            {
+                MulaiGameplay();
+            }
         }
         else
         {
-            // Jika seluruh cerita (Element 0 sampai 3) sudah habis
-            panelDialog.SetActive(false); // Tutup kotak cerita
-            MulaiGameplay();              // Jalankan game pertempurannya!
+            MulaiGameplay();
         }
     }
 
     void MulaiGameplay()
     {
-        Debug.Log("Cerita selesai! Aktifkan sistem pertarungan ramuan.");
-        // Di sini nanti kamu tinggal memunculkan musuh dan deck kartu ramuanmu
+        Debug.Log("Game Dimulai!");
+        
+        // Matikan KESELURUHAN Background abu-abu agar game-nya terlihat
+        if (backgroundCerita != null) backgroundCerita.SetActive(false);
+
+        // Ganti lagu ke game utama
+        if (bgmTransition != null) bgmTransition.SetActive(false);
+        if (bgmMain != null) bgmMain.SetActive(true);
     }
 }

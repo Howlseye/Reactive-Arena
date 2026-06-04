@@ -157,11 +157,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3200081369167554167, guid: 7d1a47bc0ff1ff940a8ac10d69fac71c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -50
+      value: -51
       objectReference: {fileID: 0}
     - target: {fileID: 3200081369167554167, guid: 7d1a47bc0ff1ff940a8ac10d69fac71c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 603
+      value: 618
       objectReference: {fileID: 0}
     - target: {fileID: 3200081369167554167, guid: 7d1a47bc0ff1ff940a8ac10d69fac71c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1297,7 +1297,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -130.83417, y: -431.7673}
+  m_AnchoredPosition: {x: -132, y: -431.7673}
   m_SizeDelta: {x: 578.1561, y: 275.6722}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1070616944
@@ -1770,7 +1770,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -121.892395, y: 4.636841}
+  m_AnchoredPosition: {x: -177, y: 3}
   m_SizeDelta: {x: -365.93607, y: 12.5566}
   m_Pivot: {x: 0.6999741, y: -1.8103572}
 --- !u!114 &1295659165
@@ -2441,7 +2441,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogManager
   komponenTeks: {fileID: 1848811115}
-  panelDialog: {fileID: 1334998795}
+  backgroundCerita: {fileID: 1518079167}
   tombolLanjut: {fileID: 1677437902}
   daftarCerita:
   - Awalnya, Kota Reactive Arena adalah kota yang sangat damai, maju, dan dipenuhi
@@ -2455,6 +2455,8 @@ MonoBehaviour:
     ini. Bertahanlah!
   kecepatanKetik: 0.05
   sfxKetik: {fileID: 8300000, guid: c1f5ff1d259d8754cab6b11c5e18c22b, type: 3}
+  bgmTransition: {fileID: 1047720772}
+  bgmMain: {fileID: 1432530744}
 --- !u!4 &1510326470
 Transform:
   m_ObjectHideFlags: 0
@@ -2843,34 +2845,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1518079167}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1432530744}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 1047720772}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 1510326469}
+        m_TargetAssemblyTypeName: DialogManager, Assembly-CSharp
+        m_MethodName: KalimatBerikutnya
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
