@@ -6,9 +6,36 @@ public class CombineSlot : MonoBehaviour, IDropHandler
 {
     private List<DraggableCard> cardsInSlot = new List<DraggableCard>();
     public float spacing = 15f; 
-    public int maxCards = 3; // Batas maksimal kartu
+    public int maxCards = 3;
 
-    // Cek apakah kotak combine sudah penuh
+    // TAMBAHAN BARU: Membaca isi kartu
+    public List<DraggableCard> GetCards()
+    {
+        return cardsInSlot;
+    }
+
+    // TAMBAHAN BARU: Mengosongkan slot setelah dilempar
+    public void ClearCardsAfterThrow()
+    {
+        foreach (var card in cardsInSlot)
+        {
+            Destroy(card.gameObject); // Hancurkan kartu setelah dilempar
+        }
+        cardsInSlot.Clear();
+    }
+
+    // =========== INI DIA FUNGSI YANG KURANG ===========
+    // Memasukkan kartu ke slot secara paksa lewat kode (saat dicampur)
+    public void ForceAddCard(DraggableCard card)
+    {
+        if (!cardsInSlot.Contains(card))
+        {
+            cardsInSlot.Add(card);
+            UpdateLayout();
+        }
+    }
+    // ==================================================
+
     public bool IsFull()
     {
         return cardsInSlot.Count >= maxCards;
@@ -22,7 +49,6 @@ public class CombineSlot : MonoBehaviour, IDropHandler
             
             if (droppedCard != null && !droppedCard.isInCombine)
             {
-                // Pengaman ganda: jika sudah penuh, tolak kartu masuk
                 if (IsFull()) return;
 
                 droppedCard.isInCombine = true;

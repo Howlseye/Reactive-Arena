@@ -4,6 +4,9 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(CanvasGroup))]
 public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IDropHandler
 {
+    // TAMBAHAN BARU: Identitas Kartu (Isi di Inspector dengan: "Air", "Garam", "Asam", atau "Logam")
+    public string cardType; 
+
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
     private Canvas canvas;
@@ -16,13 +19,12 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public bool isInCombine = false;
     private bool isDragging = false;
 
-    private void Awake()
+private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
         canvas = GetComponentInParent<Canvas>();
         
-        // Cari target kotak yang bernama "Combine" secara akurat
         GameObject combineObj = GameObject.Find("Combine");
         if (combineObj != null)
         {
@@ -30,8 +32,9 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
         else
         {
-            combineSlotRef = FindObjectOfType<CombineSlot>();
+            combineSlotRef = FindFirstObjectByType<CombineSlot>(); 
         }
+        // ---------------------------------
         
         startPosition = rectTransform.anchoredPosition;
         originalParent = transform.parent;
@@ -41,11 +44,7 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (isInCombine) return;
-
-        if (combineSlotRef != null && combineSlotRef.IsFull())
-        {
-            return;
-        }
+        if (combineSlotRef != null && combineSlotRef.IsFull()) return;
 
         isDragging = true;
         transform.SetAsLastSibling();
@@ -99,12 +98,10 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
     }
 
-    // Menangani kejadian ketika kartu lain tidak sengaja dijatuhkan ke atas kartu ini
     public void OnDrop(PointerEventData eventData)
     {
         if (combineSlotRef != null)
         {
-            // Teruskan (forward) kartu yang jatuh tersebut ke sistem CombineSlot utama
             combineSlotRef.OnDrop(eventData);
         }
     }
