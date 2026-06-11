@@ -35,7 +35,7 @@ public class VirusManager : MonoBehaviour
     {
         if (hpText != null)
         {
-            hpText.text = "Virus Hacu\n" + hpSekarang + "/" + hpMaksimal;
+            hpText.text = hpSekarang + "/" + hpMaksimal;
         }
     }
 }
