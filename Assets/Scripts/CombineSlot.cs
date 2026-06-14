@@ -6,35 +6,35 @@ public class CombineSlot : MonoBehaviour, IDropHandler
 {
     private List<DraggableCard> cardsInSlot = new List<DraggableCard>();
     public float spacing = 15f; 
-    public int maxCards = 3;
+    public int maxCards = 3; 
 
-    // TAMBAHAN BARU: Membaca isi kartu
+    public bool isLockedByResult = false;
+
+    public void SetLockState(bool locked)
+    {
+        isLockedByResult = locked;
+        NotifyAllCards();
+    }
+
     public List<DraggableCard> GetCards()
     {
         return cardsInSlot;
     }
 
-    // TAMBAHAN BARU: Mengosongkan slot setelah dilempar
     public void ClearCardsAfterThrow()
     {
+        // Hancurkan objek kartu agar bersih
         foreach (var card in cardsInSlot)
         {
-            Destroy(card.gameObject); // Hancurkan kartu setelah dilempar
+            if (card != null)
+            {
+                Destroy(card.gameObject);
+            }
         }
+        
         cardsInSlot.Clear();
+        UpdateLayout(); // Ini akan otomatis menyalakan kembali kartu-kartu di Deck!
     }
-
-    // =========== INI DIA FUNGSI YANG KURANG ===========
-    // Memasukkan kartu ke slot secara paksa lewat kode (saat dicampur)
-    public void ForceAddCard(DraggableCard card)
-    {
-        if (!cardsInSlot.Contains(card))
-        {
-            cardsInSlot.Add(card);
-            UpdateLayout();
-        }
-    }
-    // ==================================================
 
     public bool IsFull()
     {
@@ -72,28 +72,44 @@ public class CombineSlot : MonoBehaviour, IDropHandler
     private void UpdateLayout()
     {
         int count = cardsInSlot.Count;
-        if (count == 0) return;
-
-        float cardWidth = cardsInSlot[0].GetComponent<RectTransform>().rect.width;
-        float containerWidth = GetComponent<RectTransform>().rect.width;
         
-        float totalWidth = (count * cardWidth) + ((count - 1) * spacing);
-        float currentSpacing = spacing;
-        
-        if (totalWidth > containerWidth)
+        // Posisikan kartu-kartu
+        if (count > 0)
         {
-            currentSpacing = (containerWidth - (count * cardWidth)) / (count - 1);
-            totalWidth = containerWidth;
-        }
-        
-        float startX = -totalWidth / 2f + cardWidth / 2f;
-
-        for (int i = 0; i < count; i++)
-        {
-            RectTransform cardRect = cardsInSlot[i].GetComponent<RectTransform>();
-            float posX = startX + (i * (cardWidth + currentSpacing));
+            float cardWidth = cardsInSlot[0].GetComponent<RectTransform>().rect.width;
+            float containerWidth = GetComponent<RectTransform>().rect.width;
             
-            cardRect.anchoredPosition = new Vector2(posX, 0);
+            float totalWidth = (count * cardWidth) + ((count - 1) * spacing);
+            float currentSpacing = spacing;
+            
+            if (totalWidth > containerWidth)
+            {
+                currentSpacing = (containerWidth - (count * cardWidth)) / (count - 1);
+                totalWidth = containerWidth;
+            }
+            
+            float startX = -totalWidth / 2f + cardWidth / 2f;
+
+            for (int i = 0; i < count; i++)
+            {
+                RectTransform cardRect = cardsInSlot[i].GetComponent<RectTransform>();
+                float posX = startX + (i * (cardWidth + currentSpacing));
+                
+                cardRect.anchoredPosition = new Vector2(posX, 0);
+            }
+        }
+
+        // SETELAH posisi diperbarui, beri tahu SEMUA kartu untuk memperbarui status visualnya (Enable/Disable)
+        NotifyAllCards();
+    }
+
+    // Memberitahu kartu di Deck untuk mati/nyala tergantung penuh tidaknya Combine
+    private void NotifyAllCards()
+    {
+        DraggableCard[] allCards = FindObjectsOfType<DraggableCard>();
+        foreach (var card in allCards)
+        {
+            card.UpdateState();
         }
     }
 }

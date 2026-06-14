@@ -4,9 +4,6 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(CanvasGroup))]
 public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IDropHandler
 {
-    // TAMBAHAN BARU: Identitas Kartu (Isi di Inspector dengan: "Air", "Garam", "Asam", atau "Logam")
-    public string cardType; 
-
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
     private Canvas canvas;
@@ -16,10 +13,12 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private Transform originalParent;
     private int originalSiblingIndex;
 
+    public string cardType;
     public bool isInCombine = false;
+    public bool isResultCard = false; // Penanda apakah ini kartu gabungan
     private bool isDragging = false;
 
-private void Awake()
+    private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
@@ -32,9 +31,8 @@ private void Awake()
         }
         else
         {
-            combineSlotRef = FindFirstObjectByType<CombineSlot>(); 
+            combineSlotRef = FindObjectOfType<CombineSlot>();
         }
-        // ---------------------------------
         
         startPosition = rectTransform.anchoredPosition;
         originalParent = transform.parent;
@@ -44,7 +42,11 @@ private void Awake()
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (isInCombine) return;
-        if (combineSlotRef != null && combineSlotRef.IsFull()) return;
+
+        if (combineSlotRef != null && combineSlotRef.IsFull())
+        {
+            return;
+        }
 
         isDragging = true;
         transform.SetAsLastSibling();
@@ -88,6 +90,8 @@ private void Awake()
         transform.SetParent(originalParent);
         transform.SetSiblingIndex(originalSiblingIndex);
         rectTransform.anchoredPosition = startPosition;
+
+        UpdateState(); // Pastikan tampilan kembali normal
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -103,6 +107,34 @@ private void Awake()
         if (combineSlotRef != null)
         {
             combineSlotRef.OnDrop(eventData);
+        }
+    }
+
+    // Fungsi baru untuk memperbarui efek visual/status disable
+    public void UpdateState()
+    {
+        if (combineSlotRef == null) return;
+
+        if (isResultCard)
+        {
+            // Kartu result biarkan nyala terang, tapi matikan sensor sentuhnya
+            canvasGroup.blocksRaycasts = false;
+            canvasGroup.alpha = 1f;
+            return;
+        }
+
+        if (!isInCombine && (combineSlotRef.isLockedByResult || combineSlotRef.IsFull()))
+        {
+            // Jika kartu ada di Deck dan (Combine Penuh ATAU Terkunci karena ada Result):
+            // Matikan total fitur drag & sentuh, ubah jadi transparan
+            canvasGroup.blocksRaycasts = false;
+            canvasGroup.alpha = 0.4f; 
+        }
+        else
+        {
+            // Nyalakan kembali
+            canvasGroup.blocksRaycasts = true;
+            canvasGroup.alpha = 1f;
         }
     }
 }
