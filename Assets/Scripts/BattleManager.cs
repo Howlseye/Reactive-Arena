@@ -1,16 +1,26 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement; // === TAMBAHAN 1: Wajib untuk mereload scene ===
 
 public class BattleManager : MonoBehaviour
 {
+    // === TAMBAHAN 2: Penanda Coba Lagi (Agar cerita bisa di-skip) ===
+    public static bool isRetry = false; 
+    // ==============================================================
+
     [Header("UI & Interaksi")]
     public CombineSlot combineSlot;
     public Button btnCampur;
     public Button btnLempar;
     public GameObject kartuCampurPrefab; 
 
-    // === TAMBAHAN BARU ===
+    // === TAMBAHAN UI KONDISI MENANG/KALAH ===
+    [Header("UI Status Game")]
+    public GameObject panelGameOver;
+    public GameObject panelLevelSelesai;
+    // =======================================
+
     [Header("Posisi Kartu Hasil")]
     public Transform posisiResult; // Titik tempat kartu campur muncul
     private DraggableCard kartuCampurAktif; // Nyimpen data kartu campurnya
@@ -33,6 +43,15 @@ public class BattleManager : MonoBehaviour
     public GameObject prefabGaram;
     public GameObject prefabAsam;
     public GameObject prefabLogam;
+
+    // === TAMBAHAN: FUNGSI START ===
+    void Start()
+    {
+        // Pastikan panel disembunyikan saat game baru mulai
+        if (panelGameOver != null) panelGameOver.SetActive(false);
+        if (panelLevelSelesai != null) panelLevelSelesai.SetActive(false);
+    }
+    // ==============================
 
     void Update()
     {
@@ -243,29 +262,32 @@ public class BattleManager : MonoBehaviour
         
         if (vfxSeranganPrefab != null && virusTarget != null)
         {
-            // Memunculkan efek ledakan/serangan tepat di posisi virus
             GameObject efek = Instantiate(vfxSeranganPrefab, virusTarget.transform.position, Quaternion.identity);
-            
-            // Ubah ukurannya sesuai dengan pengaturan slider
             efek.transform.localScale = new Vector3(skalaEfek, skalaEfek, skalaEfek);
-            
-            // Hancurkan efek setelah 2 detik agar tidak memberatkan memori
             Destroy(efek, 2f);
         }
 
         if (sfxSerangan != null)
         {
-            // Memainkan suara (SFX) tepat di posisi kamera utama agar suaranya paling keras/jelas
             AudioSource.PlayClipAtPoint(sfxSerangan, Camera.main != null ? Camera.main.transform.position : Vector3.zero);
         }
         
         virusTarget.KenaDamage(finalDamage);
 
-        if (virusTarget.hpSekarang > 0)
+        // === KONDISI MENANG: CEK HP VIRUS ===
+        if (virusTarget.hpSekarang <= 0)
         {
-            // Monster membalas serangan dengan animasi sebelum ronde selesai
+            // Jika virus mati, munculkan panel menang dan hentikan coroutine agar tidak nyerang balik
+            if (panelLevelSelesai != null) panelLevelSelesai.SetActive(true);
+            sedangAnimasi = true; // Biarkan true agar pemain tidak bisa memencet tombol lagi
+            yield break; // HENTIKAN proses di sini
+        }
+        else
+        {
+            // Jika virus masih hidup, monster membalas serangan
             yield return StartCoroutine(AnimasiMonsterSerangRoutine());
         }
+        // =====================================
 
         // Reset 4 kartu awal
         ResetDeck();
@@ -327,6 +349,15 @@ public class BattleManager : MonoBehaviour
             pemain.KenaSerang(damageSeranganVirus);
         }
 
+        // === KONDISI KALAH: CEK HP PEMAIN ===
+        if (pemain.hpSekarang <= 0) 
+        {
+            if (panelGameOver != null) panelGameOver.SetActive(true);
+            sedangAnimasi = true; // Mengunci UI agar tidak bisa ditekan
+            yield break; // Hentikan proses animasi
+        }
+        // =====================================
+
         // Jeda sedikit sebelum memunculkan kartu baru agar perpindahannya mulus
         yield return new WaitForSeconds(0.2f);
     }
@@ -367,5 +398,12 @@ public class BattleManager : MonoBehaviour
             case "Asam+Garam+Logam": return 18; 
             default: return 0; 
         }
+    }
+
+    // === TAMBAHAN 3: Fungsi untuk dipanggil oleh tombol Coba Lagi ===
+    public void UlangiGame()
+    {
+        isRetry = true; // Tandai bahwa ini adalah ulangan, jadi cerita bisa di-skip
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
