@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: a0dcce56ff079d64884d27a60ae2e5eb
+guid: f1bfb6507d56d9a469489e268d5700e0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1409012849803359812
-    second: singleplayer_button_0
+      213: 3015813911998081348
+    second: btn_mulai_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: singleplayer_button_0
+      name: btn_mulai_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 164
-        height: 169
+        x: 6
+        y: 4
+        width: 1926
+        height: 906
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cb98283474e227ce0800000000000000
-      internalID: -1409012849803359812
+      spriteID: 449a35546c25ad920800000000000000
+      internalID: 3015813911998081348
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      singleplayer_button_0: -1409012849803359812
+      btn_mulai_0: 3015813911998081348
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

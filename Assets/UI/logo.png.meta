@@ -1,10 +1,64 @@
 fileFormatVersion: 2
-guid: 22f09a9659659c14f9586c52ad1d06a9
+guid: c04834f6f97051d4e84cb0c514de413c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8130112042408351863
-    second: multiplayer_button_0
+      213: -4320295261928297051
+    second: logo_0
+  - first:
+      213: 5470614613321624601
+    second: logo_1
+  - first:
+      213: 4560591551370500262
+    second: logo_2
+  - first:
+      213: 6640445872580291462
+    second: logo_3
+  - first:
+      213: 7220771215297418599
+    second: logo_4
+  - first:
+      213: -8223382129855978605
+    second: logo_5
+  - first:
+      213: -1318215486492414624
+    second: logo_6
+  - first:
+      213: 2547678001213806659
+    second: logo_7
+  - first:
+      213: 7966619702581107187
+    second: logo_8
+  - first:
+      213: -4158264754640302621
+    second: logo_9
+  - first:
+      213: -456560011164628789
+    second: logo_10
+  - first:
+      213: 8265423726798506560
+    second: logo_11
+  - first:
+      213: -5881772203921295813
+    second: logo_12
+  - first:
+      213: 3279490269522818815
+    second: logo_13
+  - first:
+      213: 5399540843189412849
+    second: logo_14
+  - first:
+      213: -7659919998633512378
+    second: logo_15
+  - first:
+      213: -5920777163311385063
+    second: logo_16
+  - first:
+      213: -3217387466338767218
+    second: logo_17
+  - first:
+      213: 209502182205696960
+    second: logo_18
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,23 +180,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: multiplayer_button_0
+      name: logo_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 165
-        height: 169
+        width: 2048
+        height: 2048
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 77810efc3d5f3d070800000000000000
-      internalID: 8130112042408351863
+      spriteID: 5ade5f3695a3b04c0800000000000000
+      internalID: -4320295261928297051
       vertices: []
       indices: 
       edges: []
@@ -151,7 +205,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 2e9ced9195fa272478ba0f14b5d83b7e
     internalID: 0
     vertices: []
     indices: 
@@ -159,9 +213,11 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":2048.0,"y":2048.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      multiplayer_button_0: 8130112042408351863
+      logo_0: -4320295261928297051
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
