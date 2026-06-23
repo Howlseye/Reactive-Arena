@@ -19,6 +19,7 @@ public class BattleManager : MonoBehaviour
     [Header("UI Status Game")]
     public GameObject panelGameOver;
     public GameObject panelLevelSelesai;
+    public GameObject panelPause; // TAMBAHAN PAUSE
     // =======================================
 
     [Header("Posisi Kartu Hasil")]
@@ -44,12 +45,30 @@ public class BattleManager : MonoBehaviour
     public GameObject prefabAsam;
     public GameObject prefabLogam;
 
+    private Vector2 initialCardSize;
+    private System.Collections.Generic.List<Vector2> initialCardPositions = new System.Collections.Generic.List<Vector2>();
+
     // === TAMBAHAN: FUNGSI START ===
     void Start()
     {
         // Pastikan panel disembunyikan saat game baru mulai
         if (panelGameOver != null) panelGameOver.SetActive(false);
         if (panelLevelSelesai != null) panelLevelSelesai.SetActive(false);
+        if (panelPause != null) panelPause.SetActive(false);
+
+        // Simpan ukuran kartu pertama yang ada di scene (agar konsisten saat reset deck)
+        if (deckArea != null && deckArea.childCount > 0)
+        {
+            RectTransform cardRt = deckArea.GetChild(0).GetComponent<RectTransform>();
+            if (cardRt != null) initialCardSize = cardRt.sizeDelta;
+
+            // Simpan posisi masing-masing kartu agar jaraknya tetap saat di-reset
+            for (int i = 0; i < deckArea.childCount; i++)
+            {
+                RectTransform rt = deckArea.GetChild(i).GetComponent<RectTransform>();
+                if (rt != null) initialCardPositions.Add(rt.anchoredPosition);
+            }
+        }
     }
     // ==============================
 
@@ -277,9 +296,8 @@ public class BattleManager : MonoBehaviour
         // === KONDISI MENANG: CEK HP VIRUS ===
         if (virusTarget.hpSekarang <= 0)
         {
-            // Jika virus mati, munculkan panel menang dan hentikan coroutine agar tidak nyerang balik
-            if (panelLevelSelesai != null) panelLevelSelesai.SetActive(true);
-            sedangAnimasi = true; // Biarkan true agar pemain tidak bisa memencet tombol lagi
+            // Jika virus mati, jalankan coroutine menang
+            yield return StartCoroutine(AnimasiMenangRoutine());
             yield break; // HENTIKAN proses di sini
         }
         else
@@ -289,13 +307,64 @@ public class BattleManager : MonoBehaviour
         }
         // =====================================
 
-        // Reset 4 kartu awal
-        ResetDeck();
+        // Reset 4 kartu awal dengan animasi
+        yield return StartCoroutine(ResetDeckRoutine());
         
         // Buka kembali kunci kartu di deck untuk ronde lemparan selanjutnya
         combineSlot.SetLockState(false);
 
         sedangAnimasi = false;
+    }
+
+    private System.Collections.IEnumerator AnimasiMenangRoutine()
+    {
+        sedangAnimasi = true; 
+
+        // Tunggu sebentar setelah efek serangan pemain selesai
+        yield return new WaitForSeconds(1.0f);
+
+        // Animasi Monster Fade Out
+        if (virusTarget != null)
+        {
+            SpriteRenderer monsterRenderer = virusTarget.GetComponent<SpriteRenderer>();
+            UnityEngine.UI.Image monsterImage = virusTarget.GetComponent<UnityEngine.UI.Image>();
+            
+            float durasiFade = 1.5f;
+            float waktu = 0f;
+
+            if (monsterRenderer != null)
+            {
+                Color warna = monsterRenderer.color;
+                while (waktu < durasiFade)
+                {
+                    waktu += Time.deltaTime;
+                    warna.a = Mathf.Lerp(1f, 0f, waktu / durasiFade);
+                    monsterRenderer.color = warna;
+                    yield return null;
+                }
+            }
+            else if (monsterImage != null)
+            {
+                Color warna = monsterImage.color;
+                while (waktu < durasiFade)
+                {
+                    waktu += Time.deltaTime;
+                    warna.a = Mathf.Lerp(1f, 0f, waktu / durasiFade);
+                    monsterImage.color = warna;
+                    yield return null;
+                }
+            }
+            else 
+            {
+                // Jika objeknya tidak memiliki komponen yang bisa di-fade, tunggu saja
+                yield return new WaitForSeconds(durasiFade);
+            }
+        }
+
+        // Jeda sedikit sebelum panel muncul agar tidak mengagetkan
+        yield return new WaitForSeconds(0.5f);
+
+        if (panelLevelSelesai != null) yield return StartCoroutine(PanelPopUpRoutine(panelLevelSelesai));
     }
 
     private System.Collections.IEnumerator AnimasiMonsterSerangRoutine()
@@ -352,8 +421,9 @@ public class BattleManager : MonoBehaviour
         // === KONDISI KALAH: CEK HP PEMAIN ===
         if (pemain.hpSekarang <= 0) 
         {
-            if (panelGameOver != null) panelGameOver.SetActive(true);
             sedangAnimasi = true; // Mengunci UI agar tidak bisa ditekan
+            yield return new WaitForSeconds(1.5f); // Jeda sebelum memunculkan panel
+            if (panelGameOver != null) yield return StartCoroutine(PanelPopUpRoutine(panelGameOver));
             yield break; // Hentikan proses animasi
         }
         // =====================================
@@ -362,17 +432,106 @@ public class BattleManager : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
     }
 
-    private void ResetDeck()
+    // === TAMBAHAN: Animasi Pop Up Panel ===
+    private System.Collections.IEnumerator PanelPopUpRoutine(GameObject panel)
+    {
+        panel.SetActive(true);
+        
+        // Cari objek bernama "Content" di dalam panel (supaya background gelap tidak ikut memantul)
+        Transform targetAnim = panel.transform.Find("Content");
+        if (targetAnim == null) targetAnim = panel.transform.Find("content");
+        if (targetAnim == null) targetAnim = panel.transform; // Fallback jika tidak ada objek Content
+
+        targetAnim.localScale = Vector3.zero;
+
+        float durasi = 0.4f;
+        float waktu = 0f;
+
+        while (waktu < durasi)
+        {
+            waktu += Time.unscaledDeltaTime; 
+            float t = waktu / durasi;
+            
+            // Efek pop-up memantul (ease-out back)
+            float t1 = t - 1f;
+            float scale = 1f + 2.70158f * Mathf.Pow(t1, 3f) + 1.70158f * Mathf.Pow(t1, 2f);
+            
+            if (scale < 0) scale = 0; // Mencegah nilai scale terbalik
+            
+            targetAnim.localScale = new Vector3(scale, scale, scale);
+            yield return null;
+        }
+
+        targetAnim.localScale = Vector3.one;
+    }
+    // ======================================
+
+    private System.Collections.IEnumerator ResetDeckRoutine()
     {
         foreach (Transform sisaKartu in deckArea)
         {
             Destroy(sisaKartu.gameObject);
         }
 
-        Instantiate(prefabAir, deckArea);
-        Instantiate(prefabGaram, deckArea);
-        Instantiate(prefabAsam, deckArea);
-        Instantiate(prefabLogam, deckArea);
+        SpawnCard(prefabAir, 0);
+        yield return new WaitForSeconds(0.1f);
+        SpawnCard(prefabAsam, 1);
+        yield return new WaitForSeconds(0.1f);
+        SpawnCard(prefabGaram, 2);
+        yield return new WaitForSeconds(0.1f);
+        SpawnCard(prefabLogam, 3);
+    }
+
+    private void SpawnCard(GameObject prefab, int index)
+    {
+        GameObject newCard = Instantiate(prefab, deckArea, false);
+        
+        RectTransform newRect = newCard.GetComponent<RectTransform>();
+        
+        if (newRect != null)
+        {
+            // Terapkan ukuran yang sudah kita simpan di awal Start()
+            if (initialCardSize != Vector2.zero) 
+            {
+                newRect.sizeDelta = initialCardSize;
+            }
+            else 
+            {
+                newRect.sizeDelta = prefab.GetComponent<RectTransform>().sizeDelta;
+            }
+
+            // Kembalikan ke posisi awal yang sudah disimpan jika ada
+            if (index < initialCardPositions.Count)
+            {
+                newRect.anchoredPosition = initialCardPositions[index];
+            }
+
+            StartCoroutine(CardPopUpRoutine(newRect));
+        }
+    }
+
+    private System.Collections.IEnumerator CardPopUpRoutine(RectTransform card)
+    {
+        card.localScale = Vector3.zero;
+
+        float durasi = 0.3f;
+        float waktu = 0f;
+
+        while (waktu < durasi)
+        {
+            waktu += Time.deltaTime; 
+            float t = waktu / durasi;
+            
+            float t1 = t - 1f;
+            float scale = 1f + 2.70158f * Mathf.Pow(t1, 3f) + 1.70158f * Mathf.Pow(t1, 2f);
+            if (scale < 0) scale = 0;
+            
+            if (card == null) yield break; // Jaga-jaga jika dihancurkan di tengah animasi
+            card.localScale = new Vector3(scale, scale, scale);
+            yield return null;
+        }
+
+        if (card != null) card.localScale = Vector3.one;
     }
 
     private int HitungDamage(List<string> bahan)
@@ -405,5 +564,62 @@ public class BattleManager : MonoBehaviour
     {
         isRetry = true; // Tandai bahwa ini adalah ulangan, jadi cerita bisa di-skip
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    // === FITUR PAUSE ===
+    public void PauseGame()
+    {
+        Time.timeScale = 0f;          // Menghentikan waktu/animasi
+        AudioListener.pause = true;   // Mematikan sementara semua suara (BGM/SFX)
+        if (panelPause != null) StartCoroutine(PanelPopUpRoutine(panelPause));
+    }
+
+    public void ResumeGame()
+    {
+        if (panelPause != null) 
+        {
+            StartCoroutine(PanelPopOutRoutine(panelPause));
+        }
+        else 
+        {
+            Time.timeScale = 1f;          
+            AudioListener.pause = false;  
+        }
+    }
+
+    private System.Collections.IEnumerator PanelPopOutRoutine(GameObject panel)
+    {
+        Transform targetAnim = panel.transform.Find("Content");
+        if (targetAnim == null) targetAnim = panel.transform.Find("content");
+        if (targetAnim == null) targetAnim = panel.transform;
+
+        float durasi = 0.3f;
+        float waktu = 0f;
+
+        while (waktu < durasi)
+        {
+            waktu += Time.unscaledDeltaTime; 
+            float t = waktu / durasi;
+            
+            // Efek pop-out memantul terbalik (anticipation)
+            float s = 1f - (2.70158f * Mathf.Pow(t, 3f) - 1.70158f * Mathf.Pow(t, 2f));
+            if (s < 0) s = 0;
+            
+            targetAnim.localScale = new Vector3(s, s, s);
+            yield return null;
+        }
+
+        panel.SetActive(false);
+        targetAnim.localScale = Vector3.one; // Kembalikan ke normal
+
+        Time.timeScale = 1f;
+        AudioListener.pause = false;
+    }
+
+    public void KeMenuUtama()
+    {
+        Time.timeScale = 1f;          // Wajib dikembalikan ke 1 agar scene lain tidak terhenti
+        AudioListener.pause = false;
+        SceneManager.LoadScene("HomeScene"); 
     }
 }

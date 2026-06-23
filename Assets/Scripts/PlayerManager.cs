@@ -11,6 +11,7 @@ public class PlayerManager : MonoBehaviour
     public TMP_Text hpText; 
     public RectTransform hpFill;
     public float maxFillWidth = 806f; // Panjang bar HP ketika 100%
+    public AudioClip sfxDefeat; // TAMBAHAN: Suara saat pemain kalah
 
     private float originalXPos;
 
@@ -34,6 +35,20 @@ public class PlayerManager : MonoBehaviour
         {
             hpSekarang = 0;
             UpdateUI();
+            
+            // Hentikan semua suara latar/musik yang sedang berjalan
+            AudioSource[] semuaAudio = FindObjectsOfType<AudioSource>();
+            foreach (AudioSource audio in semuaAudio)
+            {
+                audio.Stop();
+            }
+            
+            if (sfxDefeat != null)
+            {
+                // Mainkan suara kekalahan
+                AudioSource.PlayClipAtPoint(sfxDefeat, Camera.main != null ? Camera.main.transform.position : Vector3.zero);
+            }
+
             GameOver();
         }
         else

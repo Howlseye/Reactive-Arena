@@ -11,6 +11,7 @@ public class VirusManager : MonoBehaviour
     public TMP_Text hpText; 
     public RectTransform hpFill;
     public float maxFillWidth = 806f; // Panjang bar HP ketika 100%
+    public AudioClip sfxVictory; // TAMBAHAN: Suara saat monster mati / pemain menang
 
     private float originalXPos;
 
@@ -32,6 +33,20 @@ public class VirusManager : MonoBehaviour
             hpSekarang = 0;
             UpdateUI();
             Debug.Log("VIRUS HANCUR! KAMU MENANG!");
+            
+            // Hentikan semua suara latar/musik yang sedang berjalan
+            AudioSource[] semuaAudio = FindObjectsOfType<AudioSource>();
+            foreach (AudioSource audio in semuaAudio)
+            {
+                audio.Stop();
+            }
+            
+            if (sfxVictory != null)
+            {
+                // Mainkan suara kemenangan tepat sebelum monster menghilang
+                AudioSource.PlayClipAtPoint(sfxVictory, Camera.main != null ? Camera.main.transform.position : Vector3.zero);
+            }
+            
             gameObject.SetActive(false); // Menghilangkan monster
         }
         else

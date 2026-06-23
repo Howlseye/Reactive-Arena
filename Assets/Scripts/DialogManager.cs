@@ -110,6 +110,20 @@ public class DialogManager : MonoBehaviour
         }
     }
 
+    public void SkipCerita()
+    {
+        // Hentikan efek ketik yang sedang berjalan
+        if (efekKetik != null) StopCoroutine(efekKetik);
+        
+        // Hentikan suara ketikan
+        if (audioSource != null) audioSource.Stop();
+        
+        sedangKetik = false;
+
+        // Langsung tutup panel dan mulai game
+        MulaiGameplay();
+    }
+
     void MulaiGameplay()
     {
         Debug.Log("Game Dimulai!");
