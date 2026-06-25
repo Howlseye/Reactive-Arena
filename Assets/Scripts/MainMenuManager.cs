@@ -8,4 +8,13 @@ public class MainMenuManager : MonoBehaviour
     {
         SceneManager.LoadScene("MainScene"); 
     }
+
+    public void KembaliKeMainMenu()
+    {
+        SceneManager.LoadScene("HomeScene"); 
+    }
+    public void PengetahuanScene()
+    {
+        SceneManager.LoadScene("PengetahuanScene"); 
+    }
 }

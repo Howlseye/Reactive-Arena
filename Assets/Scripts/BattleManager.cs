@@ -22,6 +22,12 @@ public class BattleManager : MonoBehaviour
     public GameObject panelPause; // TAMBAHAN PAUSE
     // =======================================
 
+    // === TAMBAHAN PENGATURAN LEVEL SELANJUTNYA ===
+    [Header("Sistem Pindah Level")]
+    [Tooltip("Masukkan nama Scene untuk level berikutnya di Unity Inspector")]
+    public string namaLevelSelanjutnya; 
+    // =============================================
+
     [Header("Posisi Kartu Hasil")]
     public Transform posisiResult; // Titik tempat kartu campur muncul
     private DraggableCard kartuCampurAktif; // Nyimpen data kartu campurnya
@@ -564,6 +570,25 @@ public class BattleManager : MonoBehaviour
     {
         isRetry = true; // Tandai bahwa ini adalah ulangan, jadi cerita bisa di-skip
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    // === TAMBAHAN BARU: FUNGSI PINDAH LEVEL / HALAMAN SELANJUTNYA ===
+    public void PindahKeLevelSelanjutnya()
+    {
+        // Reset penanda retry agar level baru berjalan normal (cerita tidak ter-skip otomatis)
+        isRetry = false; 
+
+        // Pastikan variabel nama level tidak kosong
+        if (!string.IsNullOrEmpty(namaLevelSelanjutnya))
+        {
+            Time.timeScale = 1f; // Pastikan waktu berjalan normal
+            AudioListener.pause = false; // Pastikan audio menyala
+            SceneManager.LoadScene(namaLevelSelanjutnya);
+        }
+        else
+        {
+            Debug.LogError("Nama Level Selanjutnya belum diisi di Inspector Unity!");
+        }
     }
 
     // === FITUR PAUSE ===

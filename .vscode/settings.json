@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Reactive Arena.slnx"
+    "dotnet.defaultSolution": "Reactive-Arena.slnx"
 }

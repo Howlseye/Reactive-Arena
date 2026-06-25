@@ -982,7 +982,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Virus Hacu
+  m_text: Virus Influenza
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b633915a7eab00342a258e5c2f50a75f, type: 2}
   m_sharedMaterial: {fileID: -5571592025542048100, guid: b633915a7eab00342a258e5c2f50a75f, type: 2}
@@ -3305,7 +3305,7 @@ MonoBehaviour:
   panelGameOver: {fileID: 1260079169}
   panelLevelSelesai: {fileID: 380115816}
   panelPause: {fileID: 1241843620}
-  namaLevelSelanjutnya: MainScene 1
+  namaLevelSelanjutnya: 
   posisiResult: {fileID: 888428706}
   virusTarget: {fileID: 2052498048}
   pemain: {fileID: 1304164234}
@@ -4179,7 +4179,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1510326469}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: DialogManager, Assembly-CSharp
         m_MethodName: SkipCerita
         m_Mode: 0
@@ -4286,7 +4286,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Level 1
+  m_text: Level 2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c18d470c4d95ced49aa122411cabfd3b, type: 2}
   m_sharedMaterial: {fileID: -6471479325630977397, guid: c18d470c4d95ced49aa122411cabfd3b, type: 2}
@@ -4594,67 +4594,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!1 &1510326468
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1510326470}
-  - component: {fileID: 1510326469}
-  m_Layer: 0
-  m_Name: DialogManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1510326469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1510326468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20ea718292edab640863d98b7e34a03c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogManager
-  komponenTeks: {fileID: 1848811115}
-  backgroundCerita: {fileID: 1518079167}
-  tombolLanjut: {fileID: 1677437902}
-  daftarCerita:
-  - Awalnya, Kota Reactive Arena adalah kota yang sangat damai, maju, dan dipenuhi
-    dengan teknologi ramah lingkungan...
-  - Namun semua berubah ketika sebuah kebocoran laboratorium rahasia melepaskan virus
-    mutan yang sangat berbahaya!
-  - Dalam hitungan jam, kota menjadi kacau total. Infeksi menyebar cepat, kepanikan
-    melanda di mana-mana...
-  - Hingga akhirnya... seluruh sistem listrik kota padam total. Di tengah kegelapan
-    ini, satu-satunya harapan tersisa ada di tanganmu dan dek ramuan laboratorium
-    ini. Bertahanlah!
-  kecepatanKetik: 0.05
-  sfxKetik: {fileID: 8300000, guid: c1f5ff1d259d8754cab6b11c5e18c22b, type: 3}
-  bgmTransition: {fileID: 1047720772}
-  bgmMain: {fileID: 1432530744}
---- !u!4 &1510326470
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1510326468}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 268.46698, y: 2219.966, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1518079167
 GameObject:
   m_ObjectHideFlags: 0
@@ -5079,7 +5018,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1510326469}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: DialogManager, Assembly-CSharp
         m_MethodName: KalimatBerikutnya
         m_Mode: 1
@@ -6596,7 +6535,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1304164233}
         m_TargetAssemblyTypeName: BattleManager, Assembly-CSharp
-        m_MethodName: PindahKeLevelSelanjutnya
+        m_MethodName: UlangiGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7246,7 +7185,6 @@ SceneRoots:
   - {fileID: 1099667331}
   - {fileID: 1518079170}
   - {fileID: 1028492054}
-  - {fileID: 1510326470}
   - {fileID: 1149010134}
   - {fileID: 1432530746}
   - {fileID: 1047720774}
