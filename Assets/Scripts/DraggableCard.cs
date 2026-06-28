@@ -13,7 +13,7 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private Canvas canvas;
     private CombineSlot combineSlotRef;
     
-    private Vector2 startPosition;
+    public Vector2 startPosition;
     private Transform originalParent;
     private int originalSiblingIndex;
 

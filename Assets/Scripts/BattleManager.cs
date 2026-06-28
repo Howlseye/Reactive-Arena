@@ -556,6 +556,13 @@ public class BattleManager : MonoBehaviour
             if (index < initialCardPositions.Count)
             {
                 newRect.anchoredPosition = initialCardPositions[index];
+                
+                // Update startPosition agar saat kartu di-klik dari Combine, kembalinya ke tempat yang benar
+                DraggableCard dCard = newCard.GetComponent<DraggableCard>();
+                if (dCard != null) 
+                {
+                    dCard.startPosition = initialCardPositions[index];
+                }
             }
 
             StartCoroutine(CardPopUpRoutine(newRect));
