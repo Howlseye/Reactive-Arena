@@ -36,6 +36,9 @@ public class BattleManager : MonoBehaviour
     public VirusManager virusTarget;
     public PlayerManager pemain;
     public int damageSeranganVirus = 15; 
+    
+    public enum TipeAnimasiSerangan { Animator, GerakMenukik }
+    public TipeAnimasiSerangan tipeAnimasiSerang = TipeAnimasiSerangan.GerakMenukik;
     public GameObject vfxSeranganPrefab;
     [Range(0.1f, 5f)] public float skalaEfek = 1f; // Slider pengatur ukuran efek
     public AudioClip sfxSerangan;
@@ -386,37 +389,53 @@ public class BattleManager : MonoBehaviour
 
         if (virusTarget != null)
         {
-            Transform monsterT = virusTarget.transform;
-            Vector3 posisiAwal = monsterT.localPosition;
-            
-            // Gerakan animasi: monster "menukik" atau maju ke arah bawah layar (mendekati posisi deck/pemain)
-            Vector3 posisiMaju = posisiAwal + new Vector3(0, -100f, 0); 
-
-            float durasiMaju = 0.1f;
-            float durasiMundur = 0.2f;
-            float waktu = 0f;
-
-            // Gerakan maju cepat
-            while (waktu < durasiMaju)
+            if (tipeAnimasiSerang == TipeAnimasiSerangan.Animator)
             {
-                waktu += Time.deltaTime;
-                monsterT.localPosition = Vector3.Lerp(posisiAwal, posisiMaju, waktu / durasiMaju);
-                yield return null;
+                Animator monsterAnim = virusTarget.GetComponent<Animator>();
+                if (monsterAnim != null)
+                {
+                    monsterAnim.SetTrigger("Attack");
+                }
+                
+                // Waktu tunggu agar damage diberikan saat animasi attack sedang/telah memukul (disesuaikan dengan durasi animasi)
+                yield return new WaitForSeconds(0.5f); 
+
+                // Berikan damage kepada pemain
+                pemain.KenaSerang(damageSeranganVirus);
+                
+                // Tunggu sedikit sisa animasi jika diperlukan sebelum giliran berakhir
+                yield return new WaitForSeconds(0.5f);
             }
-            monsterT.localPosition = posisiMaju;
-
-            // Berikan damage kepada pemain saat animasi berada di puncak serangan
-            pemain.KenaSerang(damageSeranganVirus);
-
-            // Gerakan mundur kembali ke posisi semula
-            waktu = 0f;
-            while (waktu < durasiMundur)
+            else // tipeAnimasiSerang == TipeAnimasiSerangan.GerakMenukik
             {
-                waktu += Time.deltaTime;
-                monsterT.localPosition = Vector3.Lerp(posisiMaju, posisiAwal, waktu / durasiMundur);
-                yield return null;
+                // FALLBACK: Animasi lama (gerakan turun/menukik manual via Transform)
+                Transform monsterT = virusTarget.transform;
+                Vector3 posisiAwal = monsterT.localPosition;
+                
+                Vector3 posisiMaju = posisiAwal + new Vector3(0, -100f, 0); 
+                float durasiMaju = 0.1f;
+                float durasiMundur = 0.2f;
+                float waktu = 0f;
+
+                while (waktu < durasiMaju)
+                {
+                    waktu += Time.deltaTime;
+                    monsterT.localPosition = Vector3.Lerp(posisiAwal, posisiMaju, waktu / durasiMaju);
+                    yield return null;
+                }
+                monsterT.localPosition = posisiMaju;
+
+                pemain.KenaSerang(damageSeranganVirus);
+
+                waktu = 0f;
+                while (waktu < durasiMundur)
+                {
+                    waktu += Time.deltaTime;
+                    monsterT.localPosition = Vector3.Lerp(posisiMaju, posisiAwal, waktu / durasiMundur);
+                    yield return null;
+                }
+                monsterT.localPosition = posisiAwal;
             }
-            monsterT.localPosition = posisiAwal;
         }
         else
         {
