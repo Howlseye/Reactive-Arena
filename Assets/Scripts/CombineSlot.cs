@@ -10,6 +10,23 @@ public class CombineSlot : MonoBehaviour, IDropHandler
 
     public bool isLockedByResult = false;
 
+    void Start()
+    {
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (sceneName == "MainScene")
+        {
+            maxCards = 1;
+        }
+        else if (sceneName == "Level 2")
+        {
+            maxCards = 2;
+        }
+        else if (sceneName == "Level 3")
+        {
+            maxCards = 3;
+        }
+    }
+
     public void SetLockState(bool locked)
     {
         isLockedByResult = locked;

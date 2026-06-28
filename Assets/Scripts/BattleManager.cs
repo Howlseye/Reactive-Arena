@@ -60,6 +60,33 @@ public class BattleManager : MonoBehaviour
     // === TAMBAHAN: FUNGSI START ===
     void Start()
     {
+        // Penyesuaian Kesulitan Berdasarkan Level (Hanya mengubah Damage, HP Tetap 100)
+        string sceneName = SceneManager.GetActiveScene().name;
+        
+        if (virusTarget != null) 
+        {
+            virusTarget.hpMaksimal = 100; // Pastikan HP monster selalu 100 di semua level
+        }
+
+        if (sceneName == "MainScene")
+        {
+            damageSeranganVirus = 6;  // Paling mudah (karena damage player maksimal hanya 8)
+        }
+        else if (sceneName == "Level 2")
+        {
+            damageSeranganVirus = 10; // Sedang (karena damage player maksimal 13)
+        }
+        else if (sceneName == "Level 3")
+        {
+            damageSeranganVirus = 15; // Sulit (karena damage player maksimal 18)
+        }
+
+        if (virusTarget != null)
+        {
+            virusTarget.hpSekarang = virusTarget.hpMaksimal;
+            virusTarget.UpdateUI();
+        }
+
         // Pastikan panel disembunyikan saat game baru mulai
         if (panelGameOver != null) panelGameOver.SetActive(false);
         if (panelLevelSelesai != null) panelLevelSelesai.SetActive(false);
