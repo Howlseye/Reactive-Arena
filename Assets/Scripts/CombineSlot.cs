@@ -15,11 +15,11 @@ public class CombineSlot : MonoBehaviour, IDropHandler
         string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         if (sceneName == "MainScene")
         {
-            maxCards = 1;
+            maxCards = 3;
         }
         else if (sceneName == "Level 2")
         {
-            maxCards = 2;
+            maxCards = 3;
         }
         else if (sceneName == "Level 3")
         {
